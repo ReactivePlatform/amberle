@@ -64,6 +64,15 @@ public abstract class Maybe<T> {
         }
     }
 
+    final public Maybe<T> filterNot(final Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "Parameter predicate should not be null.");
+        if (isPresent() && !predicate.test(value())) {
+            return this;
+        } else {
+            return empty();
+        }
+    }
+
     final public T getOrElse(T other) {
         if (isPresent()) {
             return value();
@@ -77,6 +86,17 @@ public abstract class Maybe<T> {
             return value();
         } else {
             return null;
+        }
+    }
+
+    final public <Ex extends Throwable> T getOrElseThrow(final Supplier<? extends Ex> throwableSupplier) {
+        Objects.requireNonNull(throwableSupplier, "Parameter throwableSupplier should not be null.");
+        if (isPresent()) {
+            return value();
+        } else {
+            final Ex throwable = throwableSupplier.get();
+            Objects.requireNonNull(throwable, "The result of throwableSupplier should not be null.");
+            return Throwables.sneakyThrow(throwable);
         }
     }
 
