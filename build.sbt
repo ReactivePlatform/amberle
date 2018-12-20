@@ -9,9 +9,9 @@ scalaVersion := "2.12.8"
 lazy val Amberle = (project in file("."))
   .aggregate(docs)
 
-lazy val docs = project.aggregate(`amberle-core`, `amberle-codegen`, `abmerle-tests`)
+lazy val docs = project.aggregate(`amberle-core`, `amberle-codegen`, `amberle-tests`)
 
-lazy val `abmerle-tests` = (project in file("amberle-tests"))
+lazy val `amberle-tests` = (project in file("amberle-tests"))
   .dependsOn(`amberle-core`)
 
 lazy val `amberle-codegen` = project in file("amberle-codegen")
@@ -25,4 +25,6 @@ lazy val `amberle-core` = (project in file("amberle-core"))
   )
   .enablePlugins(AutomateHeaderPlugin)
   .enablePlugins(AutomateJavaFormatterPlugin)
+
+
 
