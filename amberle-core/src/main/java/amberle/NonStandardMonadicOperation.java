@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 xyz.reactiveplatform.amberle
+ * Copyright 2018 amberle-core
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,3 +15,13 @@
  */
 
 package amberle;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import static java.lang.annotation.ElementType.METHOD;
+
+@Target({METHOD})
+@Retention(RetentionPolicy.CLASS)
+public @interface NonStandardMonadicOperation {}
