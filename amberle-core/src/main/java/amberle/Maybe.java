@@ -64,7 +64,8 @@ public abstract class Maybe<T> {
 
   public abstract <R> Maybe<R> map(final Function<? super T, ? extends R> mapper);
 
-  public abstract <R> Maybe<R> flatMap(final Function<T, Maybe<? extends R>> mapper);
+  public abstract <R> Maybe<R> flatMap(
+      final Function<? super T, ? extends Maybe<? extends R>> mapper);
 
   @SuppressWarnings("unchecked")
   public final <R> Maybe<R> flatten() {
@@ -195,7 +196,8 @@ public abstract class Maybe<T> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public final <R> Maybe<R> flatMap(final Function<T, Maybe<? extends R>> mapper) {
+    public final <R> Maybe<R> flatMap(
+        final Function<? super T, ? extends Maybe<? extends R>> mapper) {
       Objects.requireNonNull(mapper, "Parameter mapper should not be null.");
       final Maybe<? extends R> result = mapper.apply(value());
       Objects.requireNonNull(
@@ -214,6 +216,23 @@ public abstract class Maybe<T> {
       } else {
         return (Maybe<R>) result;
       }
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (!(o instanceof Just)) {
+        return false;
+      }
+      final Just<?> just = (Just<?>) o;
+      return value.equals(just.value);
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(value);
     }
   }
 
@@ -239,7 +258,8 @@ public abstract class Maybe<T> {
     }
 
     @Override
-    public final <R> Maybe<R> flatMap(final Function<T, Maybe<? extends R>> mapper) {
+    public final <R> Maybe<R> flatMap(
+        final Function<? super T, ? extends Maybe<? extends R>> mapper) {
       Objects.requireNonNull(mapper, "Parameter mapper should not be null.");
       return Maybe.empty();
     }
