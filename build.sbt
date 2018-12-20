@@ -26,5 +26,11 @@ lazy val `amberle-core` = (project in file("amberle-core"))
   .enablePlugins(AutomateHeaderPlugin)
   .enablePlugins(AutomateJavaFormatterPlugin)
 
+lazy val `amberle-core-scala` = (project in file("amberle-core-scala"))
+  .dependsOn(`amberle-core`)
+
+lazy val `amberle-zio` = (project in file("amberle-zio"))
+  .dependsOn(`amberle-core-scala`)
+
 
 
