@@ -1,5 +1,2 @@
-/**
- * A functional programming library with love.
- */
-
+/** A functional programming library with love. */
 package amberle;

@@ -8,5 +8,4 @@ import static java.lang.annotation.ElementType.METHOD;
 
 @Target({METHOD})
 @Retention(RetentionPolicy.CLASS)
-public @interface NonStandardMonadicOperation {
-}
+public @interface NonStandardMonadicOperation {}
