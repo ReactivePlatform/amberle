@@ -9,9 +9,14 @@ scalaVersion := "2.12.8"
 lazy val Amberle = (project in file("."))
   .aggregate(docs)
 
-lazy val docs = project.aggregate(`amberle-core`)
+lazy val docs = project.aggregate(`amberle-core`, `amberle-codegen`, `abmerle-tests`)
 
-lazy val `amberle-core` = project
+lazy val `abmerle-tests` = (project in file("amberle-tests"))
+  .dependsOn(`amberle-core`)
+
+lazy val `amberle-codegen` = project in file("amberle-codegen")
+
+lazy val `amberle-core` = (project in file("amberle-core"))
   .settings(
     crossPaths := false,
     autoScalaLibrary := false,
