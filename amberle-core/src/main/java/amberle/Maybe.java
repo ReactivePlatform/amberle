@@ -16,6 +16,8 @@
 
 package amberle;
 
+import amberle.annotation.NonStandardMonadicOperation;
+
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Consumer;
