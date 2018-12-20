@@ -30,36 +30,28 @@ public abstract class Maybe<T> {
   private Maybe() {}
 
   @SuppressWarnings("unchecked")
-  public static final <T> Maybe<T> empty() {
+  public static <T> Maybe<T> empty() {
     return (Maybe<T>) Empty.INSTANCE;
   }
 
-  public static final <T> Maybe<T> from(T value) {
-    if (value == null) {
-      return empty();
-    } else {
-      return new Just<>(value);
-    }
+  public static <T> Maybe<T> from(T value) {
+    return (value == null) ? empty() : new Just<T>(value);
   }
 
   public abstract T value();
 
   public abstract boolean isPresent();
 
-  public final boolean isDefined() {
-    return isPresent();
-  }
-
-  public final boolean nonEmpty() {
-    return isPresent();
-  }
-
   public final boolean isAbsent() {
     return !isPresent();
   }
 
+  public final boolean isJust() {
+    return isPresent() && tag == TypeTag.Just;
+  }
+
   public final boolean isEmpty() {
-    return isAbsent();
+    return isAbsent() && tag == TypeTag.Empty;
   }
 
   public abstract <R> Maybe<R> map(final Function<? super T, ? extends R> mapper);
@@ -69,19 +61,15 @@ public abstract class Maybe<T> {
 
   @SuppressWarnings("unchecked")
   public final <R> Maybe<R> flatten() {
-    if (isAbsent()) {
+    if (isEmpty()) {
       return empty();
+    } else if (isJust()) {
+      return ((Maybe<R>) value()).map(value -> (R) value);
     } else {
-      final Object currentValue = value();
-      if (currentValue instanceof Maybe<?>) {
-        // TODO check will the first cast throw correctly.
-        return ((Maybe<R>) value()).map(value -> (R) value);
-      } else {
-        throw new IllegalArgumentException(
-            LoggingHelper.format(
-                "Current value:[{}] is not an instance from `Maybe`,so flatten is not supported.",
-                currentValue));
-      }
+      throw new IllegalArgumentException(
+          LoggingHelper.format(
+              "Current value:[{}] is not an instance from `Maybe`,so flatten is not supported.",
+              value()));
     }
   }
 
@@ -90,20 +78,12 @@ public abstract class Maybe<T> {
 
   public final Maybe<T> filter(final Predicate<? super T> predicate) {
     Objects.requireNonNull(predicate, "Parameter predicate should not be null.");
-    if (isPresent() && predicate.test(value())) {
-      return this;
-    } else {
-      return empty();
-    }
+    return (isJust() && predicate.test(value())) ? this : empty();
   }
 
   public final Maybe<T> filterNot(final Predicate<? super T> predicate) {
     Objects.requireNonNull(predicate, "Parameter predicate should not be null.");
-    if (isPresent() && !predicate.test(value())) {
-      return this;
-    } else {
-      return empty();
-    }
+    return (isJust() && !predicate.test(value())) ? this : empty();
   }
 
   public final boolean contains(final T other) {
@@ -128,19 +108,11 @@ public abstract class Maybe<T> {
   }
 
   public final T getOrElse(T other) {
-    if (isPresent()) {
-      return value();
-    } else {
-      return other;
-    }
+    return (isPresent()) ? value() : other;
   }
 
   public final T getOrNull() {
-    if (isPresent()) {
-      return value();
-    } else {
-      return null;
-    }
+    return (isPresent()) ? value() : null;
   }
 
   public final <Ex extends Throwable> T getOrElseThrow(
@@ -158,7 +130,7 @@ public abstract class Maybe<T> {
   @SuppressWarnings("unchecked")
   public final Maybe<T> orElse(final Supplier<Maybe<? extends T>> otherSupplier) {
     Objects.requireNonNull(otherSupplier, "Parameter otherSupplier should not be null.");
-    if (isPresent()) {
+    if (isJust()) {
       return this;
     } else {
       final Maybe<? extends T> maybeOther = otherSupplier.get();
@@ -168,6 +140,12 @@ public abstract class Maybe<T> {
   }
 
   // --------------------------------------------------
+  private enum TypeTag {
+    Just,
+    Empty
+  }
+
+  /*package-private*/ TypeTag tag;
 
   public static final class Just<T> extends Maybe<T> {
     private final T value;
@@ -175,6 +153,7 @@ public abstract class Maybe<T> {
     private Just(final T value) {
       Objects.requireNonNull(value, "The value from Just should not be null!");
       this.value = value;
+      tag = TypeTag.Just;
     }
 
     @Override
@@ -211,11 +190,7 @@ public abstract class Maybe<T> {
     public final <R> Maybe<R> flatMapSafely(final Function<T, Maybe<? extends R>> mapper) {
       Objects.requireNonNull(mapper, "Parameter mapper should not be null.");
       final Maybe<? extends R> result = mapper.apply(value());
-      if (result == null) {
-        return empty();
-      } else {
-        return (Maybe<R>) result;
-      }
+      return (result == null) ? empty() : (Maybe<R>) result;
     }
 
     @Override
@@ -232,14 +207,16 @@ public abstract class Maybe<T> {
 
     @Override
     public int hashCode() {
-      return Objects.hash(value);
+      return Objects.hash(tag, value);
     }
   }
 
   public static final class Empty<T> extends Maybe<T> {
     private static final Maybe<?> INSTANCE = new Empty<>();
 
-    private Empty() {}
+    private Empty() {
+      tag = TypeTag.Empty;
+    }
 
     @Override
     public final T value() {
@@ -268,6 +245,16 @@ public abstract class Maybe<T> {
     public <R> Maybe<R> flatMapSafely(final Function<T, Maybe<? extends R>> mapper) {
       Objects.requireNonNull(mapper, "Parameter mapper should not be null.");
       return Maybe.empty();
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+      return (this == o);
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(tag);
     }
   }
 }
