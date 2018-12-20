@@ -2,6 +2,7 @@ package amberle;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -26,8 +27,20 @@ public abstract class Maybe<T> {
 
   public abstract boolean isPresent();
 
+  public final boolean isDefined() {
+    return isPresent();
+  }
+
+  public final boolean nonEmpty() {
+    return isPresent();
+  }
+
   public final boolean isAbsent() {
     return !isPresent();
+  }
+
+  public final boolean isEmpty() {
+    return isAbsent();
   }
 
   public abstract <R> Maybe<R> map(final Function<? super T, ? extends R> mapper);
@@ -70,6 +83,27 @@ public abstract class Maybe<T> {
       return this;
     } else {
       return empty();
+    }
+  }
+
+  public final boolean contains(final T other) {
+    return isPresent() && value().equals(other);
+  }
+
+  public final boolean exists(final Predicate<? super T> predicate) {
+    Objects.requireNonNull(predicate, "Parameter predicate should not be null.");
+    return isPresent() && predicate.test(value());
+  }
+
+  public final boolean forAll(final Predicate<? super T> predicate) {
+    Objects.requireNonNull(predicate, "Parameter predicate should not be null.");
+    return isAbsent() || predicate.test(value());
+  }
+
+  public final void forEach(final Consumer<T> consumer) {
+    Objects.requireNonNull(consumer, "Parameter consumer should not be null.");
+    if (isPresent()) {
+      consumer.accept(value());
     }
   }
 
