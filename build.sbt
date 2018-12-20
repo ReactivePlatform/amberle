@@ -1,5 +1,9 @@
-name := "Amberle"
+name := "amberle"
 
-version := "0.1"
+version := "1.0.0-SNAPSHOT"
 
-scalaVersion := "2.12.8"
+organization := "xyz.reactiveplatform.amberle"
+
+crossPaths := false
+
+autoScalaLibrary := false
