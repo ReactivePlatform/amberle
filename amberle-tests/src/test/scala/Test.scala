@@ -19,7 +19,7 @@ object Test extends App {
   locally {
     val maybe = Maybe.from(1)
     val f: java.util.function.Function[Int, Maybe[Int]] = x => Maybe.from(x * 2)
-    val g: java.util.function.Function[Int, Maybe[Int]] = x => Maybe.from(x + 2)
-    println(maybe.flatMap(f).flatMap(g) == maybe.flatMap(f).flatMap(g))
+    val g: java.util.function.Function[Int, Maybe[Int]] = x => Maybe.from(x + 3)
+    println(maybe.flatMap(f).flatMap(g) == maybe.flatMap(f(_).flatMap(g)))
   }
 }
