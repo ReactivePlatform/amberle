@@ -212,7 +212,7 @@ public abstract class Maybe<T> {
   }
 
   public static final class Empty<T> extends Maybe<T> {
-    private static final Maybe<?> INSTANCE = new Empty<>();
+    private static final Maybe<Void> INSTANCE = new Empty<>();
 
     private Empty() {
       tag = TypeTag.Empty;
