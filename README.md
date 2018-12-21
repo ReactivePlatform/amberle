@@ -1,2 +1,3 @@
 # amberle
-FP with love
+
+FP with love for Java.
